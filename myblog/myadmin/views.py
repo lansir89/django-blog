@@ -15,25 +15,28 @@ default_encoding = 'utf-8'
 
 # Create your views here.
 
+#返回的是后台默认那个文章页面
 class manage(View):
     def get(self,request,flag=""):
         content={}
         if not request.user.is_authenticated():
             return HttpResponseRedirect('my-admin.html')
         if(flag=="setting"):
-            return render(request, 'admin.html',{'setting_result':'True'})
+            return render(request, 'admin.html',{'setting_result':'True'})      #网站设置提交成功，则显示设置成功
         if (flag=="article"):
-            return render(request, 'admin.html', {'article': 'True'})
+            return render(request, 'admin.html', {'article': 'True'})           #文章提交成功
         content["article_count"]=article.objects.count()
         content['com_count']=comment.objects.count()
         content['article_list']=article.objects.all()[:17]
         content['mycom']=comment.objects.all()
         return render(request,'admin.html',content)
 
+#登录视图
 class myadmin(View):
     def get(self,request):
         return render(request,'my-admin.html')
 
+#登录判断
 class mylogin(View):
     def post(self,request):
         username=request.POST['username']
@@ -47,6 +50,7 @@ class mylogin(View):
                 return HttpResponseRedirect(reverse('djManage'))
         return HttpResponse("登陆失败")
 
+#编写文章视图
 class writearticle(View):
     def get(self,request):
         if not request.user.is_authenticated():
@@ -55,6 +59,7 @@ class writearticle(View):
         content={"form":form}
         return render(request,'writearticle.html',content)
 
+#提交文章视图
 class post_article(View):
     def post(self,request):
         form = articleForm(request.POST)
@@ -72,6 +77,7 @@ class post_article(View):
             newArticle.save()
             return HttpResponseRedirect(url)
 
+#后台默认页面
 class admin_index(View):
     def get(self,requeat):
         myarticle=article.objects.count()
@@ -81,6 +87,7 @@ class list_article(View):
     def get(self,request):
         return HttpResponse("文章页面")
 
+#设置页面视图
 class djsetting(View):
     def get(self,request):
         if sys.getdefaultencoding() != default_encoding:
